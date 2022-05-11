@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- HEAD -->
+  <head>
+    <meta charset="utf-8" />
+    <link id="favicon" rel="icon" href="public/favicon.ico" />
+    <link rel="manifest" href="public/manifest.json" />
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <meta
+      name="viewport"
+      content="width=device-width, height=device-height, viewport-fit=cover, initial-scale=1"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="HelloWorld" content="Matrix-HelloWorld" />
+    <style media="screen">
+      #canvas {
+        background: #0D0208;
+        height: 100vh;
+        position: absolute;
+        width: 100vw;
+        z-index: -1;
+      }
+    </style>
+    <title id="title">Matrix-HelloWorld</title>
+  </head>
+
+  <!-- BODY -->
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root" class="container-fluid">
+      <div class="h-100 row">
+        <div class="col-xl">
+          <div class="align-items-center d-flex justify-content-center mt-5 p-5">
+            <h1 id="hello-world" class="text-light">Hello World!</h1>
+          </div>
+        </div>
+        <canvas id="canvas"></canvas>
+      </div>
+    </div>
+  </body>
+
+  <!-- JAVASCRIPT -->
+  <script type="text/javascript">
+
+    // constants
+    const fontSize = Number("20");
+    const letters = String("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}");
+    const matrix = Array.from(letters);
+    
+    // canvas & context
+    const canvas = document.getElementById("canvas");
+    canvas.height = Number(canvas.clientHeight) * Number(window.devicePixelRatio);
+    canvas.width = Number(canvas.clientWidth) * Number(window.devicePixelRatio);
+    const context = canvas.getContext("2d");
+    context.font = String(`${fontSize}px arial`);
+
+    // columns
+    const columnCount = Math.floor(canvas.width / fontSize);
+    const columns = Array(columnCount).fill().map(() => {
+      return {
+        isFirstPassDone: Boolean(false),
+        lastCharacter: String(matrix[0]),
+        x: Number(canvas.width/2),
+        y: Number(canvas.height/2),
+        deltax: Number(0),
+        deltay: Number(0)
+      }
+    });
+
+    const snake = () => {
+      // darken canvas with each pass
+      context.fillStyle = String("rgb(0, 0, 0, 0.1)");
+      context.fillRect(Number("0"), Number("0"), canvas.width, canvas.height);
+
+      // iterate columns
+      for(let i = Number("0"); i < columns.length; i++) {
+
+        // get the character to draw
+        const lastCharacter = String(columns[i].lastCharacter);
+        const newCharacter = String(matrix[Math.floor(Math.random() * matrix.length)]);
+
+        // set offsets
+        let nextX = (columns[i].x + columns[i].deltax)
+        let nextY = (columns[i].y + columns[i].deltay)
+        const xOffset = Number(columns[i].x * fontSize);
+        const yOffset = Number(columns[i].y * fontSize);
+        const yOffsetMinus1 = Number((columns[i].row - Number("1")) * fontSize);
+        const yOffsetMinus30 = Number((columns[i].row - Number("30")) * fontSize);
+        
+
+        // draw new letter
+        context.fillStyle = String("#00FF41");
+        context.fillText(newCharacter, nextX, nextY);
+
+        // flash white 0.5% chance (not on first pass though)
+        if(Math.random() < Number("0.01")) {
+          eventChange = Math.random();
+          if (eventChange < Number("0.25"))
+            columns[i].deltax++;
+          if (eventChange >= Number("0.25") && eventChange < Number("0.5"))
+            columns[i].deltax--;
+          if (eventChange >= Number("0.5") && eventChange < Number("0.75"))
+            columns[i].deltay++;
+          if (eventChange >= Number("0.75"))
+            columns[i].deltay--;
+
+          context.fillStyle = String("#FFFFFF");
+          context.fillText(lastCharacter, xOffset, yOffsetMinus1);
+        }
+
+        if (nextX < 0) {
+          nextX=0;
+          newDeltaX = Number(0 - columns[i].deltax);
+          columns[i].deltax = newDeltaX;
+        }
+
+        if (nextX > canvas.width) {
+          nextX=canvas.width;
+          newDeltaX = Number(0 - columns[i].deltax);
+          columns[i].deltax = newDeltaX;
+        }
+
+        if (nextY < 0) {
+          nextY=0;
+          newDeltaY = Number(0 - columns[i].deltay);
+          columns[i].deltay = newDeltaY;
+        }
+
+        if (nextY > canvas.height) {
+          nextY=canvas.height;
+          newDeltaY = Number(0 - columns[i].deltay);
+          columns[i].deltay = newDeltaY;
+        }
+
+        // trail reset to black
+        if(columns[i].isFirstPassDone) {
+          context.fillStyle = String("#000000");
+          context.fillRect(xOffset, yOffsetMinus30, fontSize, fontSize);
+        }
+
+        columns[i].x = nextX;
+        columns[i].y = nextY;
+
+        // track the letter drawn
+        columns[i].lastCharacter = newCharacter;
+      }
+    };
+
+    // repeat drawLetters() every 50ms
+    setInterval(snake, 50);
+
+  </script>
+</html>
