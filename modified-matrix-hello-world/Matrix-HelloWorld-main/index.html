@@ -70,7 +70,7 @@
 
     const snake = () => {
       // darken canvas with each pass
-      context.fillStyle = String("rgb(0, 0, 0, 0.1)");
+      context.fillStyle = String("rgb(0, 0, 0, 0.2)");
       context.fillRect(Number("0"), Number("0"), canvas.width, canvas.height);
 
       // iterate columns
@@ -81,8 +81,8 @@
         const newCharacter = String(matrix[Math.floor(Math.random() * matrix.length)]);
 
         // set offsets
-        let nextX = (columns[i].x + columns[i].deltax)
-        let nextY = (columns[i].y + columns[i].deltay)
+        let nextX = (columns[i].x + columns[i].deltax);
+        let nextY = (columns[i].y + columns[i].deltay);
         const xOffset = Number(columns[i].x * fontSize);
         const yOffset = Number(columns[i].y * fontSize);
         const yOffsetMinus1 = Number((columns[i].row - Number("1")) * fontSize);
@@ -95,19 +95,21 @@
 
         // flash white 0.5% chance (not on first pass though)
         if(Math.random() < Number("0.01")) {
-          eventChange = Math.random();
-          if (eventChange < Number("0.25"))
-            columns[i].deltax++;
-          if (eventChange >= Number("0.25") && eventChange < Number("0.5"))
-            columns[i].deltax--;
-          if (eventChange >= Number("0.5") && eventChange < Number("0.75"))
-            columns[i].deltay++;
-          if (eventChange >= Number("0.75"))
-            columns[i].deltay--;
-
           context.fillStyle = String("#FFFFFF");
           context.fillText(lastCharacter, xOffset, yOffsetMinus1);
         }
+
+        const eventChange = Math.random();
+
+
+        if (eventChange < Number("0.25"))
+          columns[i].deltax++;
+        if (eventChange >= Number("0.25") && eventChange < Number("0.5"))
+          columns[i].deltax--;
+        if (eventChange >= Number("0.5") && eventChange < Number("0.75"))
+          columns[i].deltay++;
+        if (eventChange >= Number("0.75"))
+          columns[i].deltay--;
 
         if (nextX < 0) {
           nextX=0;
